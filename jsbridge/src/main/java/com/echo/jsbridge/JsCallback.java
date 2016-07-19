@@ -14,10 +14,10 @@ import java.lang.ref.WeakReference;
 public class JsCallback {
     private static Handler mHandler = new Handler(Looper.getMainLooper());
     private static final String CALLBACK_JS_FORMAT = "javascript:JSBridge.onFinish('%s', %s);";
-    private String mPort;
+    private int mPort;
     private WeakReference<WebView> mWebViewRef;
 
-    public JsCallback(WebView view, String port) {
+    public JsCallback(WebView view, int port) {
         mWebViewRef = new WeakReference<>(view);
         mPort = port;
     }

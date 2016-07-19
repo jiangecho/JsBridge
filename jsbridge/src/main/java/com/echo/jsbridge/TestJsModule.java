@@ -10,6 +10,10 @@ import org.json.JSONObject;
  * Created by jiangecho on 16/6/19.
  */
 public class TestJsModule implements JsModule {
+    public static void showToast(WebView webView, JSONObject param) {
+        Toast.makeText(webView.getContext(), "get hello", Toast.LENGTH_SHORT).show();
+    }
+
     public static void showToast(WebView webView, JSONObject param, final JsCallback jsCallback) {
         String message = param.optString("msg");
         new Thread(new Runnable() {
