@@ -18,10 +18,10 @@ import java.util.Map;
 public class JsBridge {
     private static Map<String, HashSet<Method>> exposedMethods = new HashMap<>();
 
-    public static void register(String exposedName, Class<? extends JsModule> clazz) {
-        if (!exposedMethods.containsKey(exposedName)) {
+    public static void register(String moduleName, Class<? extends JsModule> clazz) {
+        if (!exposedMethods.containsKey(moduleName)) {
             try {
-                exposedMethods.put(exposedName, getAllMethod(clazz));
+                exposedMethods.put(moduleName, getAllMethod(clazz));
             } catch (Exception e) {
                 e.printStackTrace();
             }
