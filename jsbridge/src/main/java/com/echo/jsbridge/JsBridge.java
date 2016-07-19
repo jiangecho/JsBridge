@@ -17,7 +17,7 @@ import java.util.Map;
 public class JsBridge {
     private static Map<String, HashMap<String, Method>> exposedMethods = new HashMap<>();
 
-    public static void register(String exposedName, Class<? extends IBridge> clazz) {
+    public static void register(String exposedName, Class<? extends JsModule> clazz) {
         if (!exposedMethods.containsKey(exposedName)) {
             try {
                 exposedMethods.put(exposedName, getAllMethod(clazz));
@@ -37,7 +37,7 @@ public class JsBridge {
             }
             Class[] parameters = method.getParameterTypes();
             if (null != parameters && parameters.length == 3) {
-                if (parameters[0] == WebView.class && parameters[1] == JSONObject.class && parameters[2] == Callback.class) {
+                if (parameters[0] == WebView.class && parameters[1] == JSONObject.class && parameters[2] == JsCallback.class) {
                     mMethodsMap.put(name, method);
                 }
             }
@@ -69,7 +69,7 @@ public class JsBridge {
                 Method method = methodHashMap.get(methodName);
                 if (method != null) {
                     try {
-                        method.invoke(null, webView, new JSONObject(param), new Callback(webView, port));
+                        method.invoke(null, webView, new JSONObject(param), new JsCallback(webView, port));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
