@@ -7,7 +7,6 @@ import android.webkit.WebView;
 import org.json.JSONObject;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -28,28 +27,22 @@ public class JsBridge {
         }
     }
 
+    public static void unRegister(String moduleName) {
+        exposedMethods.remove(moduleName);
+    }
+
     private static HashSet<Method> getAllMethod(Class injectedCls) throws Exception {
         HashSet<Method> mMethodsMap = new HashSet<>();
         Method[] methods = injectedCls.getDeclaredMethods();
         for (Method method : methods) {
-            String name;
-            if (method.getModifiers() != (Modifier.PUBLIC | Modifier.STATIC) || (name = method.getName()) == null) {
-                continue;
-            }
-            Class[] parameters = method.getParameterTypes();
-            if (parameters != null) {
-                if (parameters.length == 3 && parameters[0] == WebView.class && parameters[1] == JSONObject.class && parameters[2] == JsCallback.class) {
-                    mMethodsMap.add(method);
-                } else if (parameters.length == 2 && parameters[0] == WebView.class && parameters[1] == JSONObject.class) {
-                    mMethodsMap.add(method);
-                }
-
+            if (JsMethodType.isValidJsMethod(method)) {
+                mMethodsMap.add(method);
             }
         }
         return mMethodsMap;
     }
 
-    public static String callJava(WebView webView, String uriString) {
+    public static String callJava(Object container, WebView webView, String uriString) {
         String methodName = "";
         String className = "";
         String param = "{}";
@@ -70,19 +63,28 @@ public class JsBridge {
             HashSet<Method> methodHashMap = exposedMethods.get(className);
 
             for (Method method : methodHashMap) {
-                if (method.getName().endsWith(methodName)) {
+                if (method.getName().equals(methodName)) {
                     try {
-                        if (port == 0 && method.getParameterTypes().length == 2) {
-                            method.invoke(null, webView, new JSONObject(param));
-                        } else {
-                            method.invoke(null, webView, new JSONObject(param), new JsCallback(webView, port));
+                        switch (JsMethodType.getJsMethodType(method)) {
+                            case C_W_J_C:
+                                method.invoke(null, container, webView, new JSONObject(param), new JsCallback(webView, port));
+                                return null;
+                            case C_W_J:
+                                method.invoke(null, container, webView, new JSONObject(param));
+                                return null;
+                            case W_J_C:
+                                method.invoke(null, webView, new JSONObject(param), new JsCallback(webView, port));
+                                return null;
+                            case W_J:
+                                method.invoke(null, webView, new JSONObject(param));
+                                return null;
+                            default:
+                                break;
                         }
-                        break;
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-
             }
         }
         return null;

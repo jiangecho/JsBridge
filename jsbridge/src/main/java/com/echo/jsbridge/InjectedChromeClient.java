@@ -1,7 +1,10 @@
 package com.echo.jsbridge;
 
+import android.app.Activity;
 import android.content.DialogInterface;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.webkit.JsPromptResult;
@@ -13,10 +16,28 @@ import android.webkit.WebView;
  * Created by jiangecho on 16/7/19.
  */
 public class InjectedChromeClient extends WebChromeClient {
+    private Object container;
+
+    public InjectedChromeClient(Activity activity) {
+        this.container = activity;
+    }
+
+    public InjectedChromeClient(AppCompatActivity appCompatActivity) {
+        this.container = appCompatActivity;
+    }
+
+    public InjectedChromeClient(Fragment fragment) {
+        this.container = fragment;
+    }
+
+    public InjectedChromeClient(android.app.Fragment fragment) {
+        this.container = fragment;
+    }
+
     @Override
     public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
         //return super.onJsPrompt(view, url, message, defaultValue, result);
-        result.confirm(JsBridge.callJava(view, message));
+        result.confirm(JsBridge.callJava(container, view, message));
         return true;
     }
 

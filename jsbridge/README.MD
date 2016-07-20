@@ -3,7 +3,7 @@
 1. inject js
 
 ```
-// override your WebViewClient
+// override your WebViewClient or you include the js in web page
 @Override
 public void onPageFinished(WebView view, String url) {
     super.onPageFinished(view, url);
