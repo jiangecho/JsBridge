@@ -1,2 +1,1 @@
 include ':app', ':jsbridge'
-include ':../../intellij/callMe/EchoCommon:library'
