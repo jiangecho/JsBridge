@@ -50,12 +50,13 @@ public class JsBridge {
         if (!TextUtils.isEmpty(uriString) && uriString.startsWith("JSBridge")) {
             Uri uri = Uri.parse(uriString);
             className = uri.getHost();
-            param = uri.getQuery();
+            String tmpParam = uri.getQuery();
             port = uri.getPort();
             String path = uri.getPath();
             if (!TextUtils.isEmpty(path)) {
                 methodName = path.replace("/", "");
             }
+            param = TextUtils.isEmpty(tmpParam) ? param: tmpParam;
         }
 
 
